@@ -18,8 +18,12 @@
 
 | Home Page | Dashboard |
 |-----------|-----------|
-| ![Home](screenshots/home.png) | ![Dashboard](screenshots/dashboard.png) |
-
+<p align="center">
+  <img src="screenshots/home.PNG" width="800">
+</p>
+<p align="center">
+  <img src="screenshots/dashboard.PNG" width="800">
+</p>
 
 
 ---
