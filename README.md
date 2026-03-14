@@ -1,4 +1,5 @@
-# 📊 SmartDataOS — Smart Data Processing & Validation Dashboard
+# 📊 SmartDataOS — Smart Data Processing & Validation Dashboard                    
+  
 
 > A full-stack Flask web application demonstrating 19+ advanced Python concepts — regex validation, NumPy/Pandas statistics, Matplotlib visualizations, concurrent threading, AI insights engine, dataset health scoring, comparison engine, and auto-generated HTML reports.
 
@@ -10,12 +11,14 @@
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
+                    
+  
 
 ## 🖥️ Screenshots
 
-| Home Page 
-
-
+| Home Page | Dashboard |
+|-----------|-----------|
+| ![Home](screenshots/home.png) | ![Dashboard](screenshots/dashboard.png) |
 
 
 
