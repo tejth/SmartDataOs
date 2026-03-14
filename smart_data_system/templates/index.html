@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Data Processing System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── Background grid ──────────────────────────────────────────────────── -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- ── Navbar ───────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="brand-icon">⬡</span>
+      <span class="brand-text">SmartData<span class="brand-accent">OS</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}" class="nav-link active">Process</a>
+      <a href="{{ url_for('compare') }}" class="nav-link">Compare</a>
+      <a href="{{ url_for('history') }}" class="nav-link">History</a>
+      <a href="{{ url_for('api_stats') }}" class="nav-link" target="_blank">API</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <h1 class="hero-title">
+    Smart Data<br/>
+    <span class="gradient-text">Processing Dashboard</span>
+  </h1>
+  <p class="hero-sub">
+    Validate inputs · Process datasets · Visualize insights · Run concurrent analysis
+  </p>
+
+  <!-- Tech stack pills -->
+  <div class="tech-pills">
+    <span class="pill">Flask</span>
+    <span class="pill">Pandas</span>
+    <span class="pill">NumPy</span>
+    <span class="pill">Matplotlib</span>
+    <span class="pill">Threading</span>
+    <span class="pill">Regex</span>
+  </div>
+</section>
+
+<!-- ── Main Form Card ────────────────────────────────────────────────────── -->
+<main class="main-wrap">
+  <div class="card form-card">
+    <div class="card-header">
+      <h2>User Input & Dataset Upload</h2>
+      <p>All fields validated with Regular Expressions · Data processed concurrently</p>
+    </div>
+
+    {% if errors %}
+    <div class="alert alert-error">
+      <span class="alert-icon">⚠</span>
+      <div>
+        <strong>Validation Errors</strong>
+        <ul class="error-list">
+          {% for field, msg in errors.items() %}
+          <li><code>{{ field }}</code>: {{ msg }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+
+    <form id="mainForm" action="{{ url_for('process') }}" method="POST" enctype="multipart/form-data" novalidate>
+
+      <!-- ── Row 1 ── -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">
+            Full Name
+          </label>
+          <input type="text" id="name" name="name"
+                 placeholder="e.g. John Doe"
+                 value="{{ form_data.name if form_data else '' }}"
+                 class="{{ 'input-error' if errors and errors.name else '' }}" />
+          <span class="field-hint" id="name-hint"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="email">
+            Email Address
+          </label>
+          <input type="email" id="email" name="email"
+                 placeholder="e.g. john@example.com"
+                 value="{{ form_data.email if form_data else '' }}"
+                 class="{{ 'input-error' if errors and errors.email else '' }}" />
+          <span class="field-hint" id="email-hint"></span>
+        </div>
+      </div>
+
+      <!-- ── Row 2 ── -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">
+            Phone Number
+          </label>
+          <input type="tel" id="phone" name="phone"
+                 placeholder="e.g. +91 98765 43210"
+                 value="{{ form_data.phone if form_data else '' }}"
+                 class="{{ 'input-error' if errors and errors.phone else '' }}" />
+          <span class="field-hint" id="phone-hint"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            Password
+            <span class="label-regex">≥8 chars · upper · lower · digit · special</span>
+          </label>
+          <div class="pw-wrap">
+            <input type="password" id="password" name="password"
+                   placeholder="e.g. Secret@123"
+                   class="{{ 'input-error' if errors and errors.password else '' }}" />
+            <button type="button" class="pw-toggle" onclick="togglePw()">👁</button>
+          </div>
+          <div class="pw-strength" id="pw-strength">
+            <div class="pw-bar" id="pw-bar"></div>
+          </div>
+          <span class="field-hint" id="password-hint"></span>
+        </div>
+      </div>
+
+      <!-- ── Dataset Upload ── -->
+      <div class="form-group full-width">
+        <label>Dataset Upload <span class="optional">(optional · CSV or JSON)</span></label>
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="dataset" name="dataset" accept=".csv,.json"
+                 onchange="handleFileSelect(this)" />
+          <div class="drop-content" id="drop-content">
+            <div class="drop-icon">📂</div>
+            <div class="drop-text">
+              <strong>Drag & drop</strong> your CSV or JSON file here
+              <br/><span class="drop-sub">or click to browse · max 10 MB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Submit ── -->
+      <button type="submit" class="btn-primary" id="submitBtn">
+        <span class="btn-text">Process & Analyse →</span>
+        <span class="btn-loader hidden" id="loader">Processing…</span>
+      </button>
+
+    </form>
+  </div>
+
+  <!-- ── Concept Cards ── -->
+  <section class="concepts-grid">
+    <div class="concept-card">
+      <div class="cc-icon">🔄</div>
+      <h3>Iterators & Generators</h3>
+      <p>Custom <code>DatasetRowIterator</code> walks rows in batches; <code>chunk_dataset</code> and <code>stats_stream</code> generators stream data lazily.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🎯</div>
+      <h3>Decorators & Closures</h3>
+      <p><code>@log_call</code>, <code>@timer</code>, and <code>@validate_input</code> wrap functions with logging, timing, and validation logic.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🏗️</div>
+      <h3>Advanced OOP</h3>
+      <p>Abstract classes, multiple inheritance, MRO, operator overloading (<code>+</code>), and mixin classes demonstrate the full OOP spectrum.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">⚡</div>
+      <h3>Concurrency</h3>
+      <p><code>threading.Thread</code> handles I/O-bound chunks; <code>multiprocessing.Pool</code> runs CPU-bound statistics in parallel processes.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔍</div>
+      <h3>Regex Validation</h3>
+      <p>All inputs validated client-side <em>and</em> server-side using compiled <code>re</code> patterns – name, email, phone, and password.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">💾</div>
+      <h3>JSON Serialization</h3>
+      <p>Processed results serialized with the <code>json</code> module to <code>datasets.json</code>, with full CRUD via the History page.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <p>SmartData<span class="brand-accent">OS</span> · Advanced Python Project · Built with Flask, Pandas, NumPy & Matplotlib</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

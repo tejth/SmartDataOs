@@ -1,0 +1,752 @@
+[
+  {
+    "id": "rec_0001",
+    "name": "Alice",
+    "saved_at": "2026-03-14T02:50:45.802624",
+    "user": {
+      "name": "Alice",
+      "email": "alice@test.com",
+      "phone": "+91 9876543210"
+    },
+    "statistics": {
+      "shape": [
+        50,
+        17
+      ],
+      "columns": [
+        "emp_id",
+        "name",
+        "age",
+        "gender",
+        "department",
+        "city",
+        "salary",
+        "experience",
+        "performance_score",
+        "projects_completed",
+        "training_hours",
+        "satisfaction_score",
+        "absences",
+        "overtime_hours",
+        "joined_year",
+        "promoted",
+        "last_appraisal_score"
+      ],
+      "numeric_columns": [
+        "age",
+        "salary",
+        "experience",
+        "performance_score",
+        "projects_completed",
+        "training_hours",
+        "satisfaction_score",
+        "absences",
+        "overtime_hours",
+        "joined_year",
+        "promoted",
+        "last_appraisal_score"
+      ],
+      "missing_values": 0,
+      "column_stats": {
+        "age": {
+          "mean": 34.18,
+          "median": 33.0,
+          "std": 8.4325,
+          "min": 21.0,
+          "max": 55.0,
+          "q25": 27.25,
+          "q75": 40.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 37.0,
+            "running_mean": 34.18,
+            "running_std": 8.4325
+          }
+        },
+        "salary": {
+          "mean": 74640.0,
+          "median": 71500.0,
+          "std": 28633.3791,
+          "min": 34000.0,
+          "max": 145000.0,
+          "q25": 49500.0,
+          "q75": 94750.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 87000.0,
+            "running_mean": 74640.0,
+            "running_std": 28633.3791
+          }
+        },
+        "experience": {
+          "mean": 9.2,
+          "median": 7.0,
+          "std": 7.1414,
+          "min": 0.0,
+          "max": 28.0,
+          "q25": 3.0,
+          "q75": 14.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 11.0,
+            "running_mean": 9.2,
+            "running_std": 7.1414
+          }
+        },
+        "performance_score": {
+          "mean": 84.78,
+          "median": 86.5,
+          "std": 9.2979,
+          "min": 65.0,
+          "max": 99.0,
+          "q25": 78.25,
+          "q75": 92.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 90.0,
+            "running_mean": 84.78,
+            "running_std": 9.2979
+          }
+        },
+        "projects_completed": {
+          "mean": 26.24,
+          "median": 22.5,
+          "std": 18.0838,
+          "min": 2.0,
+          "max": 67.0,
+          "q25": 10.25,
+          "q75": 40.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 34.0,
+            "running_mean": 26.24,
+            "running_std": 18.0838
+          }
+        },
+        "training_hours": {
+          "mean": 36.24,
+          "median": 31.0,
+          "std": 23.1219,
+          "min": 4.0,
+          "max": 90.0,
+          "q25": 16.5,
+          "q75": 51.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 20.0,
+            "running_mean": 36.24,
+            "running_std": 23.1219
+          }
+        },
+        "satisfaction_score": {
+          "mean": 7.784,
+          "median": 7.9,
+          "std": 1.157,
+          "min": 5.5,
+          "max": 9.8,
+          "q25": 6.925,
+          "q75": 8.775,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 8.6,
+            "running_mean": 7.784,
+            "running_std": 1.157
+          }
+        },
+        "absences": {
+          "mean": 3.46,
+          "median": 2.0,
+          "std": 3.9355,
+          "min": 0.0,
+          "max": 15.0,
+          "q25": 0.0,
+          "q75": 5.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 1.0,
+            "running_mean": 3.46,
+            "running_std": 3.9355
+          }
+        },
+        "overtime_hours": {
+          "mean": 14.52,
+          "median": 12.5,
+          "std": 10.3812,
+          "min": 1.0,
+          "max": 40.0,
+          "q25": 5.25,
+          "q75": 21.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 8.0,
+            "running_mean": 14.52,
+            "running_std": 10.3812
+          }
+        },
+        "joined_year": {
+          "mean": 2014.84,
+          "median": 2017.0,
+          "std": 7.0466,
+          "min": 1997.0,
+          "max": 2024.0,
+          "q25": 2009.25,
+          "q75": 2021.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 2013.0,
+            "running_mean": 2014.84,
+            "running_std": 7.0466
+          }
+        },
+        "promoted": {
+          "mean": 0.54,
+          "median": 1.0,
+          "std": 0.4984,
+          "min": 0.0,
+          "max": 1.0,
+          "q25": 0.0,
+          "q75": 1.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 1.0,
+            "running_mean": 0.54,
+            "running_std": 0.4984
+          }
+        },
+        "last_appraisal_score": {
+          "mean": 81.96,
+          "median": 83.5,
+          "std": 10.8645,
+          "min": 58.0,
+          "max": 99.0,
+          "q25": 74.25,
+          "q75": 91.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 88.0,
+            "running_mean": 81.96,
+            "running_std": 10.8645
+          }
+        }
+      },
+      "row_batches_processed": 5
+    },
+    "chart_paths": [
+      "charts/employee_dataset_bar.png",
+      "charts/employee_dataset_line.png",
+      "charts/employee_dataset_dist.png"
+    ]
+  },
+  {
+    "id": "rec_0002",
+    "name": "Tejendra Pal Singh",
+    "saved_at": "2026-03-14T08:25:13.668172",
+    "user": {
+      "name": "Tejendra Pal Singh",
+      "email": "myrandom915@gmail.com",
+      "phone": "9897790814"
+    },
+    "statistics": {
+      "shape": [
+        50,
+        17
+      ],
+      "columns": [
+        "emp_id",
+        "name",
+        "age",
+        "gender",
+        "department",
+        "city",
+        "salary",
+        "experience",
+        "performance_score",
+        "projects_completed",
+        "training_hours",
+        "satisfaction_score",
+        "absences",
+        "overtime_hours",
+        "joined_year",
+        "promoted",
+        "last_appraisal_score"
+      ],
+      "numeric_columns": [
+        "age",
+        "salary",
+        "experience",
+        "performance_score",
+        "projects_completed",
+        "training_hours",
+        "satisfaction_score",
+        "absences",
+        "overtime_hours",
+        "joined_year",
+        "promoted",
+        "last_appraisal_score"
+      ],
+      "missing_values": 0,
+      "column_stats": {
+        "age": {
+          "mean": 34.18,
+          "median": 33.0,
+          "std": 8.4325,
+          "min": 21.0,
+          "max": 55.0,
+          "q25": 27.25,
+          "q75": 40.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 37.0,
+            "running_mean": 34.18,
+            "running_std": 8.4325
+          }
+        },
+        "salary": {
+          "mean": 74640.0,
+          "median": 71500.0,
+          "std": 28633.3791,
+          "min": 34000.0,
+          "max": 145000.0,
+          "q25": 49500.0,
+          "q75": 94750.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 87000.0,
+            "running_mean": 74640.0,
+            "running_std": 28633.3791
+          }
+        },
+        "experience": {
+          "mean": 9.2,
+          "median": 7.0,
+          "std": 7.1414,
+          "min": 0.0,
+          "max": 28.0,
+          "q25": 3.0,
+          "q75": 14.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 11.0,
+            "running_mean": 9.2,
+            "running_std": 7.1414
+          }
+        },
+        "performance_score": {
+          "mean": 84.78,
+          "median": 86.5,
+          "std": 9.2979,
+          "min": 65.0,
+          "max": 99.0,
+          "q25": 78.25,
+          "q75": 92.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 90.0,
+            "running_mean": 84.78,
+            "running_std": 9.2979
+          }
+        },
+        "projects_completed": {
+          "mean": 26.24,
+          "median": 22.5,
+          "std": 18.0838,
+          "min": 2.0,
+          "max": 67.0,
+          "q25": 10.25,
+          "q75": 40.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 34.0,
+            "running_mean": 26.24,
+            "running_std": 18.0838
+          }
+        },
+        "training_hours": {
+          "mean": 36.24,
+          "median": 31.0,
+          "std": 23.1219,
+          "min": 4.0,
+          "max": 90.0,
+          "q25": 16.5,
+          "q75": 51.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 20.0,
+            "running_mean": 36.24,
+            "running_std": 23.1219
+          }
+        },
+        "satisfaction_score": {
+          "mean": 7.784,
+          "median": 7.9,
+          "std": 1.157,
+          "min": 5.5,
+          "max": 9.8,
+          "q25": 6.925,
+          "q75": 8.775,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 8.6,
+            "running_mean": 7.784,
+            "running_std": 1.157
+          }
+        },
+        "absences": {
+          "mean": 3.46,
+          "median": 2.0,
+          "std": 3.9355,
+          "min": 0.0,
+          "max": 15.0,
+          "q25": 0.0,
+          "q75": 5.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 1.0,
+            "running_mean": 3.46,
+            "running_std": 3.9355
+          }
+        },
+        "overtime_hours": {
+          "mean": 14.52,
+          "median": 12.5,
+          "std": 10.3812,
+          "min": 1.0,
+          "max": 40.0,
+          "q25": 5.25,
+          "q75": 21.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 8.0,
+            "running_mean": 14.52,
+            "running_std": 10.3812
+          }
+        },
+        "joined_year": {
+          "mean": 2014.84,
+          "median": 2017.0,
+          "std": 7.0466,
+          "min": 1997.0,
+          "max": 2024.0,
+          "q25": 2009.25,
+          "q75": 2021.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 2013.0,
+            "running_mean": 2014.84,
+            "running_std": 7.0466
+          }
+        },
+        "promoted": {
+          "mean": 0.54,
+          "median": 1.0,
+          "std": 0.4984,
+          "min": 0.0,
+          "max": 1.0,
+          "q25": 0.0,
+          "q75": 1.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 1.0,
+            "running_mean": 0.54,
+            "running_std": 0.4984
+          }
+        },
+        "last_appraisal_score": {
+          "mean": 81.96,
+          "median": 83.5,
+          "std": 10.8645,
+          "min": 58.0,
+          "max": 99.0,
+          "q25": 74.25,
+          "q75": 91.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 88.0,
+            "running_mean": 81.96,
+            "running_std": 10.8645
+          }
+        }
+      },
+      "row_batches_processed": 5
+    },
+    "chart_paths": [
+      "charts/employee_dataset_bar.png",
+      "charts/employee_dataset_line.png",
+      "charts/employee_dataset_dist.png"
+    ]
+  },
+  {
+    "id": "rec_0003",
+    "name": "Tejendra Pal Singh",
+    "saved_at": "2026-03-14T08:32:07.740144",
+    "user": {
+      "name": "Tejendra Pal Singh",
+      "email": "myrandom915@gmail.com",
+      "phone": "9897790814"
+    },
+    "statistics": {
+      "shape": [
+        50,
+        17
+      ],
+      "columns": [
+        "emp_id",
+        "name",
+        "age",
+        "gender",
+        "department",
+        "city",
+        "salary",
+        "experience",
+        "performance_score",
+        "projects_completed",
+        "training_hours",
+        "satisfaction_score",
+        "absences",
+        "overtime_hours",
+        "joined_year",
+        "promoted",
+        "last_appraisal_score"
+      ],
+      "numeric_columns": [
+        "age",
+        "salary",
+        "experience",
+        "performance_score",
+        "projects_completed",
+        "training_hours",
+        "satisfaction_score",
+        "absences",
+        "overtime_hours",
+        "joined_year",
+        "promoted",
+        "last_appraisal_score"
+      ],
+      "missing_values": 0,
+      "column_stats": {
+        "age": {
+          "mean": 34.18,
+          "median": 33.0,
+          "std": 8.4325,
+          "min": 21.0,
+          "max": 55.0,
+          "q25": 27.25,
+          "q75": 40.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 37.0,
+            "running_mean": 34.18,
+            "running_std": 8.4325
+          }
+        },
+        "salary": {
+          "mean": 74640.0,
+          "median": 71500.0,
+          "std": 28633.3791,
+          "min": 34000.0,
+          "max": 145000.0,
+          "q25": 49500.0,
+          "q75": 94750.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 87000.0,
+            "running_mean": 74640.0,
+            "running_std": 28633.3791
+          }
+        },
+        "experience": {
+          "mean": 9.2,
+          "median": 7.0,
+          "std": 7.1414,
+          "min": 0.0,
+          "max": 28.0,
+          "q25": 3.0,
+          "q75": 14.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 11.0,
+            "running_mean": 9.2,
+            "running_std": 7.1414
+          }
+        },
+        "performance_score": {
+          "mean": 84.78,
+          "median": 86.5,
+          "std": 9.2979,
+          "min": 65.0,
+          "max": 99.0,
+          "q25": 78.25,
+          "q75": 92.75,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 90.0,
+            "running_mean": 84.78,
+            "running_std": 9.2979
+          }
+        },
+        "projects_completed": {
+          "mean": 26.24,
+          "median": 22.5,
+          "std": 18.0838,
+          "min": 2.0,
+          "max": 67.0,
+          "q25": 10.25,
+          "q75": 40.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 34.0,
+            "running_mean": 26.24,
+            "running_std": 18.0838
+          }
+        },
+        "training_hours": {
+          "mean": 36.24,
+          "median": 31.0,
+          "std": 23.1219,
+          "min": 4.0,
+          "max": 90.0,
+          "q25": 16.5,
+          "q75": 51.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 20.0,
+            "running_mean": 36.24,
+            "running_std": 23.1219
+          }
+        },
+        "satisfaction_score": {
+          "mean": 7.784,
+          "median": 7.9,
+          "std": 1.157,
+          "min": 5.5,
+          "max": 9.8,
+          "q25": 6.925,
+          "q75": 8.775,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 8.6,
+            "running_mean": 7.784,
+            "running_std": 1.157
+          }
+        },
+        "absences": {
+          "mean": 3.46,
+          "median": 2.0,
+          "std": 3.9355,
+          "min": 0.0,
+          "max": 15.0,
+          "q25": 0.0,
+          "q75": 5.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 1.0,
+            "running_mean": 3.46,
+            "running_std": 3.9355
+          }
+        },
+        "overtime_hours": {
+          "mean": 14.52,
+          "median": 12.5,
+          "std": 10.3812,
+          "min": 1.0,
+          "max": 40.0,
+          "q25": 5.25,
+          "q75": 21.5,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 8.0,
+            "running_mean": 14.52,
+            "running_std": 10.3812
+          }
+        },
+        "joined_year": {
+          "mean": 2014.84,
+          "median": 2017.0,
+          "std": 7.0466,
+          "min": 1997.0,
+          "max": 2024.0,
+          "q25": 2009.25,
+          "q75": 2021.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 2013.0,
+            "running_mean": 2014.84,
+            "running_std": 7.0466
+          }
+        },
+        "promoted": {
+          "mean": 0.54,
+          "median": 1.0,
+          "std": 0.4984,
+          "min": 0.0,
+          "max": 1.0,
+          "q25": 0.0,
+          "q75": 1.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 1.0,
+            "running_mean": 0.54,
+            "running_std": 0.4984
+          }
+        },
+        "last_appraisal_score": {
+          "mean": 81.96,
+          "median": 83.5,
+          "std": 10.8645,
+          "min": 58.0,
+          "max": 99.0,
+          "q25": 74.25,
+          "q75": 91.0,
+          "count": 50,
+          "running_final": {
+            "index": 50,
+            "value": 88.0,
+            "running_mean": 81.96,
+            "running_std": 10.8645
+          }
+        }
+      },
+      "row_batches_processed": 5
+    },
+    "chart_paths": [
+      "charts/employee_dataset_bar.png",
+      "charts/employee_dataset_line.png",
+      "charts/employee_dataset_dist.png"
+    ]
+  }
+]

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · SmartDataOS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- ── Navbar ───────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="brand-icon">⬡</span>
+      <span class="brand-text">SmartData<span class="brand-accent">OS</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}" class="nav-link">Process</a>
+      <a href="{{ url_for('compare') }}" class="nav-link">Compare</a>
+      <a href="{{ url_for('history') }}" class="nav-link">History</a>
+      <a href="{{ url_for('api_stats') }}" class="nav-link" target="_blank">API</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Dashboard Header ─────────────────────────────────────────────────── -->
+<section class="dash-header">
+  <div class="dash-meta">
+    <span class="dash-badge success">✓ Processing Complete</span>
+    <span class="dash-time">{{ generated_at }}</span>
+    <span class="dash-id">Record: <code>{{ record_id }}</code></span>
+  </div>
+  <h1 class="dash-title">Results for <span class="gradient-text">{{ user.name }}</span></h1>
+  <p class="dash-sub">{{ user.email }} · {{ user.phone }}</p>
+</section>
+
+<main class="main-wrap">
+
+  <!-- ── Stats Overview ────────────────────────────────────────────────── -->
+  {% if stats and stats.shape %}
+  <div class="stats-overview">
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.shape[0] }}</div>
+      <div class="stat-label">Rows</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.shape[1] }}</div>
+      <div class="stat-label">Columns</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.numeric_columns | length }}</div>
+      <div class="stat-label">Numeric Cols</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.missing_values }}</div>
+      <div class="stat-label">Missing Values</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.row_batches_processed }}</div>
+      <div class="stat-label">Batches Iterated</div>
+    </div>
+  </div>
+  {% elif stats and stats.error %}
+  <div class="alert alert-error">
+    <span class="alert-icon">⚠</span>
+    <strong>Dataset Error:</strong> {{ stats.error }}
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <span class="alert-icon">ℹ</span>
+    No dataset uploaded. User information has been validated and stored.
+  </div>
+  {% endif %}
+
+  <!-- ── Column Statistics ─────────────────────────────────────────────── -->
+  {% if stats and stats.column_stats %}
+  <div class="card">
+    <div class="card-header">
+      <h2>📊 Column Statistics</h2>
+      <p>Computed with NumPy (mean, median, std, percentiles)</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Count</th>
+            <th>Mean</th>
+            <th>Median</th>
+            <th>Std Dev</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Q25</th>
+            <th>Q75</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for col, s in stats.column_stats.items() %}
+          <tr>
+            <td class="col-name">{{ col }}</td>
+            <td>{{ s.count }}</td>
+            <td class="num">{{ s.mean }}</td>
+            <td class="num">{{ s.median }}</td>
+            <td class="num">{{ s.std }}</td>
+            <td class="num">{{ s.min }}</td>
+            <td class="num">{{ s.max }}</td>
+            <td class="num">{{ s.q25 }}</td>
+            <td class="num">{{ s.q75 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Charts ────────────────────────────────────────────────────────── -->
+  {% if chart_paths %}
+  <div class="card">
+    <div class="card-header">
+      <h2>📈 Visualizations</h2>
+      <p>Generated with Matplotlib · Bar chart · Line chart · Distribution histogram</p>
+    </div>
+    <div class="charts-grid">
+      {% for path in chart_paths %}
+      <div class="chart-wrap">
+        <img src="{{ url_for('static', filename=path) }}" alt="Chart" class="chart-img" />
+        <div class="chart-label">
+          {% if 'bar' in path %}Bar Chart – Column Means
+          {% elif 'line' in path %}Line Chart – Chunk Means
+          {% else %}Distribution Histogram{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Threading Result ──────────────────────────────────────────────── -->
+  {% if threading_result and threading_result.status == 'completed' %}
+  <div class="card">
+    <div class="card-header">
+      <h2>⚡ Concurrent Threading Result</h2>
+      <p>Dataset split across {{ threading_result.threads_used }} threads using <code>threading.Thread</code></p>
+    </div>
+    <div class="threading-meta">
+      <div class="tm-item">
+        <span class="tm-val">{{ threading_result.threads_used }}</span>
+        <span class="tm-label">Threads</span>
+      </div>
+      <div class="tm-item">
+        <span class="tm-val">{{ threading_result.total_rows }}</span>
+        <span class="tm-label">Rows Processed</span>
+      </div>
+      <div class="tm-item">
+        <span class="tm-val">{{ threading_result.elapsed_seconds }}s</span>
+        <span class="tm-label">Elapsed Time</span>
+      </div>
+    </div>
+    <div class="chunk-grid">
+      {% for chunk in threading_result.chunk_results %}
+      <div class="chunk-card">
+        <div class="chunk-header">Chunk {{ chunk.chunk_id }}</div>
+        <div class="chunk-rows">{{ chunk.rows_processed }} rows</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Data Preview ───────────────────────────────────────────────────── -->
+  {% if preview_rows %}
+  <div class="card">
+    <div class="card-header">
+      <h2>🔍 Data Preview</h2>
+      <p>First 8 rows (iterated using <code>DatasetRowIterator</code>)</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            {% for key in preview_rows[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in preview_rows %}
+          <tr>
+            {% for val in row.values() %}
+            <td>{{ val }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══ UNIQUE FEATURE 1: Dataset Health Score -->
+  {% if health and health.score %}
+  <div class="card">
+    <div class="card-header">
+      <h2>🏥 Dataset Health Score <span style="font-size:.8rem;color:var(--muted);font-weight:400">— Unique Feature #1</span></h2>
+      <p>Graded on Completeness · Uniqueness · Size · Consistency · Column Diversity</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem">
+      <div style="width:90px;height:90px;border-radius:50%;border:4px solid {{ health.badge_color }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:2rem;font-weight:800;color:{{ health.badge_color }}">{{ health.grade }}</span>
+      </div>
+      <div>
+        <div style="font-size:2rem;font-weight:700;color:var(--blue-200)">{{ health.score }}<span style="font-size:1rem;color:var(--muted)">/100</span></div>
+        <div style="color:var(--muted);font-size:.9rem">{{ health.summary }}</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      {% for name, val in health.breakdown.items() %}
+      {% set pct = (val.score / val.max * 100)|int %}
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <span style="width:110px;font-size:.8rem;color:var(--muted);flex-shrink:0">{{ name }}</span>
+        <div style="flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden">
+          <div style="width:{{ pct }}%;height:100%;background:{{ health.badge_color }};border-radius:99px"></div>
+        </div>
+        <span style="font-size:.78rem;color:var(--muted);width:45px;text-align:right">{{ val.score }}/{{ val.max }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ══ UNIQUE FEATURE 2: AI Analyst Insights -->
+  {% if insights %}
+  <div class="card">
+    <div class="card-header">
+      <h2>🧠 AI Analyst Insights <span style="font-size:.8rem;color:var(--muted);font-weight:400">— Unique Feature #2</span></h2>
+      <p>Auto-generated findings: skewness · outliers · correlations · data quality</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem">
+      {% for ins in insights %}
+      <div style="display:flex;gap:.8rem;padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border);align-items:flex-start">
+        <span style="font-size:1.2rem;flex-shrink:0">{{ ins.icon }}</span>
+        <div>
+          <strong style="font-size:.88rem;color:var(--blue-200);display:block;margin-bottom:.2rem">{{ ins.title }}</strong>
+          <span style="font-size:.8rem;color:var(--muted)">{{ ins.detail }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ══ UNIQUE FEATURE 3: Live Inline Report Viewer ══════════════════════ -->
+  {% if report_path %}
+  <div class="card" style="padding:0;overflow:hidden;border-color:rgba(59,130,246,.4);">
+
+    <!-- ── Report toolbar ──────────────────────────────────────────────── -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+                gap:.8rem;padding:1.2rem 1.5rem;
+                background:linear-gradient(135deg,rgba(30,58,95,.7),rgba(15,23,42,.9));
+                border-bottom:1px solid rgba(59,130,246,.3)">
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <span style="font-size:1.4rem">📄</span>
+        <div>
+          <div style="font-weight:700;font-size:1rem;color:var(--blue-200)">
+            Smart Report
+            <span style="font-size:.75rem;color:var(--muted);font-weight:400;margin-left:.5rem">— Live Preview · Unique Feature #3</span>
+          </div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.1rem">
+            Self-contained HTML · embedded charts · printable to PDF
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <!-- Expand/collapse toggle -->
+        <button onclick="toggleReport()" id="toggleBtn"
+          style="padding:.4rem .9rem;border-radius:8px;border:1px solid rgba(59,130,246,.3);
+                 background:rgba(59,130,246,.1);color:var(--blue-200);cursor:pointer;
+                 font-size:.82rem;font-family:inherit;transition:background .2s">
+          ⬆ Collapse
+        </button>
+        <!-- Open in new tab -->
+        <a href="{{ url_for('static', filename=report_path) }}" target="_blank"
+           style="padding:.4rem .9rem;border-radius:8px;border:1px solid rgba(59,130,246,.3);
+                  background:rgba(59,130,246,.1);color:var(--blue-200);text-decoration:none;
+                  font-size:.82rem;white-space:nowrap">
+          ↗ Full Screen
+        </a>
+        <!-- Print button -->
+        <button onclick="printReport()"
+          style="padding:.4rem .9rem;border-radius:8px;border:1px solid rgba(59,130,246,.3);
+                 background:rgba(59,130,246,.1);color:var(--blue-200);cursor:pointer;
+                 font-size:.82rem;font-family:inherit">
+          🖨 Print / PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Embedded iframe ─────────────────────────────────────────────── -->
+    <div id="reportWrapper" style="transition:height .35s ease;height:820px;overflow:hidden;">
+      <iframe
+        id="reportFrame"
+        src="{{ url_for('static', filename=report_path) }}"
+        style="width:100%;height:820px;border:none;display:block;
+               background:#0F172A;"
+        title="Analysis Report"
+        loading="eager">
+      </iframe>
+    </div>
+
+  </div>
+
+  <script>
+    let reportExpanded = true;
+    function toggleReport() {
+      const wrapper = document.getElementById('reportWrapper');
+      const btn     = document.getElementById('toggleBtn');
+      if (reportExpanded) {
+        wrapper.style.height = '0px';
+        btn.textContent = '⬇ Expand Report';
+        reportExpanded = false;
+      } else {
+        wrapper.style.height = '820px';
+        btn.textContent = '⬆ Collapse';
+        reportExpanded = true;
+      }
+    }
+    function printReport() {
+      const frame = document.getElementById('reportFrame');
+      frame.contentWindow.print();
+    }
+  </script>
+  {% endif %}
+
+  <!-- ── Concepts Used ─────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <h2>🎓 Python Concepts Demonstrated</h2>
+      <p>All concepts required by the assignment specification</p>
+    </div>
+    <div class="concepts-check">
+      {% set concepts = [
+        ("✓", "Custom Iterator", "DatasetRowIterator.__iter__ / __next__"),
+        ("✓", "Generator Functions", "chunk_dataset(), stats_stream(), json_record_generator()"),
+        ("✓", "Decorator @log_call", "Logs every function call with args and return value"),
+        ("✓", "Decorator @timer", "Measures and records execution time of any function"),
+        ("✓", "Decorator @validate_input", "Parameterised decorator factory for dict validation"),
+        ("✓", "Abstract Class", "BaseValidator (abc.ABC + @abstractmethod)"),
+        ("✓", "Multiple Inheritance", "UserFormValidator(BaseValidator, SerializableMixin, LoggableMixin, ReprMixin)"),
+        ("✓", "MRO", "Python C3 linearisation resolves method lookup order"),
+        ("✓", "Operator Overloading", "DataProcessor.__add__ merges two processors; __repr__, __eq__"),
+        ("✓", "Mixin Classes", "SerializableMixin, LoggableMixin, ReprMixin"),
+        ("✓", "Regex Validation", "re.compile() patterns for name, email, phone, password"),
+        ("✓", "Threading", "threading.Thread + threading.Lock for concurrent chunk processing"),
+        ("✓", "Multiprocessing", "multiprocessing.Pool.map() for CPU-bound statistics"),
+        ("✓", "JSON Serialization", "json.dump / json.load for persistent data storage"),
+        ("✓", "os & sys modules", "os.path, os.makedirs, os.cpu_count(); sys.path, sys.version"),
+        ("✓", "datetime module", "Timestamps on every saved record and log entry"),
+        ("✓", "NumPy", "mean, median, std, percentiles, array operations"),
+        ("✓", "Pandas", "DataFrame loading, .describe(), .select_dtypes(), .to_dict()"),
+        ("✓", "Matplotlib", "Bar chart, line chart, histogram with dark theme"),
+      ] %}
+      {% for status, concept, detail in concepts %}
+      <div class="check-item">
+        <span class="check-status ok">{{ status }}</span>
+        <div class="check-body">
+          <strong>{{ concept }}</strong>
+          <code>{{ detail }}</code>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── Actions ───────────────────────────────────────────────────────── -->
+  <div class="action-bar">
+    <a href="{{ url_for('index') }}" class="btn-primary">← Process Another Dataset</a>
+    <a href="{{ url_for('history') }}" class="btn-secondary">View All Records</a>
+    {% if report_path %}
+    <a href="{{ url_for('static', filename=report_path) }}" class="btn-secondary" target="_blank">📄 Open Report ↗</a>
+    {% endif %}
+    <a href="{{ url_for('api_stats') }}" class="btn-secondary" target="_blank">JSON API ↗</a>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>SmartData<span class="brand-accent">OS</span> · Record <code>{{ record_id }}</code> saved · {{ generated_at }}</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
