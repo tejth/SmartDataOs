@@ -362,14 +362,9 @@ with open(LOG_FILE, "a", encoding="utf-8") as f:
 ## 👤 Author
 
 **Tejendra Pal Singh**
-- 📧 myrandom915@gmail.com
-- 🐙 GitHub: [@your-username](https://github.com/your-username)
+- 📧 ptejendra91@gmail.com
+- 🐙 GitHub: [@tejth](https://github.com/tejth)
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
