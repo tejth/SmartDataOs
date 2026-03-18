@@ -23,6 +23,8 @@ correlation heatmaps, preprocessing tools, filtering, merging and downloadable r
 
 </div>
 
+
+
 ---
 
 ## ✨ Features
@@ -44,24 +46,15 @@ correlation heatmaps, preprocessing tools, filtering, merging and downloadable r
 
 ## 🖥️ Screenshots
 
-<table>
-<tr>
-<td align="center"><b>Home Page</b><br/>Regex validation + drag & drop</td>
-<td align="center"><b>Dashboard</b><br/>Stats + charts + threading</td>
-</tr>
-<tr>
-<td align="center"><b>Smart Report</b><br/>Health Score A+ · Live iframe</td>
-<td align="center"><b>Preprocessing</b><br/>Before/After preview + download</td>
-</tr>
-<tr>
-<td align="center"><b>Correlation Heatmap</b><br/>Pearson matrix · strong pairs</td>
-<td align="center"><b>Dataset Merger</b><br/>4 join types · download merged CSV</td>
-</tr>
-</table>
 
-> Add your own screenshots to the `screenshots/` folder and update the links above.
-
----
+<img width="1021" height="934" alt="1" src="https://github.com/user-attachments/assets/37dea329-9de1-4965-9620-e32513ddf888" />                    
+<img width="1012" height="894" alt="2" src="https://github.com/user-attachments/assets/e2107288-a012-4d78-81a1-878ae726474c" />
+<img width="798" height="915" alt="10" src="https://github.com/user-attachments/assets/652dfc53-368f-4398-a9d6-d5d0f5a3e92a" />
+<img width="960" height="939" alt="9" src="https://github.com/user-attachments/assets/0d546da7-f1da-4f6d-82d7-7ff81af8fd93" />
+<img width="960" height="842" alt="7" src="https://github.com/user-attachments/assets/593a98f6-4816-48e8-9d39-44762aa19a0a" />
+<img width="984" height="868" alt="5" src="https://github.com/user-attachments/assets/3eb27c9b-5d3a-4dab-9722-82ae0773b739" />
+                                                        
+                                             
 
 ## 🚀 Getting Started
 
