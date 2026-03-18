@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SmartDataOS · Filter</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    select.sel{width:100%;padding:.7rem .9rem;background:rgba(10,22,40,.6);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:inherit;font-size:.88rem;outline:none;cursor:pointer;}
+    select.sel:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--accent-glow);}
+    select.sel option{background:#1E293B;}
+    .ptbl{width:100%;border-collapse:collapse;font-size:.8rem;}
+    .ptbl th{background:rgba(30,58,95,.55);color:var(--blue-200);padding:.55rem .8rem;text-align:left;white-space:nowrap;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+    .ptbl td{padding:.45rem .8rem;border-bottom:1px solid rgba(59,130,246,.06);color:var(--text);white-space:nowrap;font-family:"JetBrains Mono",monospace;font-size:.76rem;}
+    .ptbl tr:hover td{background:rgba(59,130,246,.04);}
+    .ptbl tr:last-child td{border-bottom:none;}
+    .ptbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+    .filter-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.6rem;align-items:end;padding:.7rem;background:rgba(30,58,95,.18);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.5rem;}
+    @media(max-width:680px){.filter-row{grid-template-columns:1fr 1fr;}}
+    .btn-add{padding:.65rem 1.2rem;border-radius:var(--radius);border:1px solid var(--border);color:var(--blue-200);background:rgba(59,130,246,.08);cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:500;transition:all .2s;white-space:nowrap;}
+    .btn-add:hover{border-color:var(--blue-400);background:rgba(59,130,246,.15);}
+    .btn-remove{padding:.55rem .8rem;border-radius:var(--radius);border:1px solid rgba(239,68,68,.2);color:#f87171;background:rgba(239,68,68,.06);cursor:pointer;font-family:inherit;font-size:.85rem;}
+    .btn-remove:hover{background:rgba(239,68,68,.15);}
+    .result-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .9rem;border-radius:999px;font-size:.82rem;font-weight:600;}
+    .rb-green{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;}
+    .btn-green{display:inline-flex;align-items:center;gap:.55rem;padding:.82rem 1.8rem;border-radius:var(--radius);background:linear-gradient(135deg,#059669,#10b981);border:none;color:#fff;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(5,150,105,.3);transition:all .2s;}
+    .btn-green:hover{opacity:.9;box-shadow:0 4px 28px rgba(5,150,105,.5);transform:translateY(-1px);}
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-glow"></div>
+<nav class="navbar"><div class="nav-inner">
+  <div class="nav-brand"><span class="brand-icon">⬡</span><span class="brand-text">SmartData<span class="brand-accent">OS</span></span></div>
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}"          class="nav-link">Process</a>
+    <a href="{{ url_for('preprocess') }}"     class="nav-link">Preprocess</a>
+    <a href="{{ url_for('profile') }}"        class="nav-link">Profile</a>
+    <a href="{{ url_for('filter_data') }}"    class="nav-link active">Filter</a>
+    <a href="{{ url_for('heatmap') }}"        class="nav-link">Heatmap</a>
+    <a href="{{ url_for('merge_datasets') }}" class="nav-link">Merge</a>
+    <a href="{{ url_for('compare') }}"        class="nav-link">Compare</a>
+    <a href="{{ url_for('history') }}"        class="nav-link">History</a>
+    <a href="{{ url_for('api_stats') }}"      class="nav-link" target="_blank">API</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-badge">Smart Filter &amp; Search</div>
+  <h1 class="hero-title">Filter, Search &amp; <span class="gradient-text">Sort Any Dataset</span></h1>
+  <p class="hero-sub">Add multiple filter conditions · Global text search · Sort by any column · Download filtered results as CSV.</p>
+  <div class="tech-pills"><span class="pill">Multi-Condition Filter</span><span class="pill">Global Search</span><span class="pill">Pandas Boolean Masking</span><span class="pill">Sort Any Column</span><span class="pill">Download CSV</span></div>
+</section>
+
+<main class="main-wrap">
+  {% if error %}<div class="alert alert-error"><span class="alert-icon">⚠</span><div><strong>Error</strong><p style="margin-top:.2rem;font-size:.85rem;color:var(--muted)">{{ error }}</p></div></div>{% endif %}
+
+  <div class="card form-card">
+    <div class="card-header">
+      <h2>🔍 Filter &amp; Search Dataset</h2>
+      <p>Upload a CSV · add filter conditions · global search · sort — then view and download filtered rows</p>
+    </div>
+    <form action="{{ url_for('filter_data') }}" method="POST" enctype="multipart/form-data" id="filterForm">
+
+      <!-- File upload -->
+      <div class="form-group full-width" style="margin-bottom:1.2rem">
+        <div class="dropzone" id="dropzone">
+          <input type="file" name="dataset" accept=".csv,.json" onchange="handleFileSelect(this)" required/>
+          <div class="drop-content" id="drop-content"><div class="drop-icon">🔍</div>
+            <div class="drop-text"><strong>Upload</strong> your CSV or JSON dataset<br/><span class="drop-sub">or click to browse</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global search -->
+      <div class="form-row" style="margin-bottom:1.2rem">
+        <div class="form-group">
+          <label>🔎 Global Search <span class="optional">(searches all text columns)</span></label>
+          <input type="text" name="search" placeholder="e.g.  IT  or  Mumbai  or  Female" value="{{ search or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label>Sort By Column</label>
+          <input type="text" name="sort_col" placeholder="e.g.  salary  or  age" value="{{ sort_col or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label>Sort Direction</label>
+          <select name="sort_dir" class="sel">
+            <option value="asc" {% if sort_dir == 'asc' %}selected{% endif %}>Ascending ↑</option>
+            <option value="desc" {% if sort_dir == 'desc' %}selected{% endif %}>Descending ↓</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter conditions -->
+      <div style="margin-bottom:.6rem;font-size:.8rem;font-weight:600;color:var(--blue-200)">Filter Conditions</div>
+      <div id="filter-container">
+        <div class="filter-row">
+          <div><label style="font-size:.75rem;color:var(--muted)">Column Name</label><input type="text" name="filter_col" placeholder="e.g. salary"/></div>
+          <div><label style="font-size:.75rem;color:var(--muted)">Operator</label>
+            <select name="filter_op" class="sel">
+              <option value="eq">= Equals</option>
+              <option value="neq">≠ Not Equals</option>
+              <option value="contains">Contains</option>
+              <option value="gt">&gt; Greater Than</option>
+              <option value="gte">≥ Greater or Equal</option>
+              <option value="lt">&lt; Less Than</option>
+              <option value="lte">≤ Less or Equal</option>
+              <option value="between">Between (lo,hi)</option>
+              <option value="isnull">Is Empty</option>
+              <option value="notnull">Is Not Empty</option>
+            </select>
+          </div>
+          <div><label style="font-size:.75rem;color:var(--muted)">Value</label><input type="text" name="filter_val" placeholder="e.g. 50000"/></div>
+          <div><button type="button" class="btn-remove" onclick="this.closest('.filter-row').remove()">✕</button></div>
+        </div>
+      </div>
+      <button type="button" class="btn-add" onclick="addFilter()" style="margin-bottom:1.4rem">+ Add Filter Condition</button>
+
+      <button type="submit" class="btn-primary">🔍 Apply Filters →</button>
+    </form>
+  </div>
+
+  {% if has_results %}
+  <div class="card">
+    <div class="card-header">
+      <h2 style="display:flex;align-items:center;gap:.8rem">
+        Filter Results — <span style="color:var(--blue-300)">{{ dataset_name }}</span>
+        <span class="result-badge rb-green">{{ filtered_rows }} / {{ total_rows }} rows</span>
+      </h2>
+      <p>Showing first 50 rows · {{ filtered_rows }} rows matched out of {{ total_rows }} total · download full filtered CSV below</p>
+    </div>
+    <div class="ptbl-wrap" style="margin-bottom:1.4rem">
+      <table class="ptbl">
+        <thead><tr>{% for col in cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {% for row in preview %}
+          <tr>{% for col in cols %}<td>{{ row[col] if row[col] is not none else '—' }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+      <a href="{{ url_for('download_filtered', filename=filtered_name) }}" class="btn-green">⬇ Download {{ filtered_name }}</a>
+      <a href="{{ url_for('filter_data') }}" class="btn-secondary">🔄 New Filter</a>
+    </div>
+  </div>
+  {% endif %}
+</main>
+<footer class="footer">SmartData<span class="brand-accent">OS</span> · Smart Filter Engine · Multi-Condition · Global Search · Pandas Boolean Masking</footer>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+function addFilter() {
+  const tpl = `<div class="filter-row">
+    <div><label style="font-size:.75rem;color:var(--muted)">Column Name</label><input type="text" name="filter_col" placeholder="e.g. age"/></div>
+    <div><label style="font-size:.75rem;color:var(--muted)">Operator</label>
+      <select name="filter_op" class="sel">
+        <option value="eq">= Equals</option><option value="neq">≠ Not Equals</option>
+        <option value="contains">Contains</option><option value="gt">&gt; Greater Than</option>
+        <option value="gte">≥ Greater or Equal</option><option value="lt">&lt; Less Than</option>
+        <option value="lte">≤ Less or Equal</option><option value="between">Between (lo,hi)</option>
+        <option value="isnull">Is Empty</option><option value="notnull">Is Not Empty</option>
+      </select></div>
+    <div><label style="font-size:.75rem;color:var(--muted)">Value</label><input type="text" name="filter_val" placeholder="value"/></div>
+    <div><button type="button" class="btn-remove" onclick="this.closest('.filter-row').remove()">✕</button></div>
+  </div>`;
+  document.getElementById('filter-container').insertAdjacentHTML('beforeend', tpl);
+}
+</script>
+</body></html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SmartDataOS · Merge</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    select.sel{width:100%;padding:.75rem 1rem;background:rgba(10,22,40,.6);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:inherit;font-size:.9rem;outline:none;cursor:pointer;}
+    select.sel:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--accent-glow);}
+    select.sel option{background:#1E293B;}
+    .ptbl{width:100%;border-collapse:collapse;font-size:.8rem;}
+    .ptbl th{background:rgba(30,58,95,.55);color:var(--blue-200);padding:.55rem .8rem;text-align:left;white-space:nowrap;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+    .ptbl td{padding:.45rem .8rem;border-bottom:1px solid rgba(59,130,246,.06);color:var(--text);white-space:nowrap;font-family:"JetBrains Mono",monospace;font-size:.76rem;}
+    .ptbl tr:hover td{background:rgba(59,130,246,.04);}
+    .ptbl tr:last-child td{border-bottom:none;}
+    .ptbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+    .join-card{padding:1rem 1.2rem;border-radius:var(--radius);border:1px solid var(--border);background:rgba(30,58,95,.2);cursor:pointer;transition:all .2s;}
+    .join-card:hover,.join-card.selected{border-color:var(--blue-400);background:rgba(59,130,246,.1);}
+    .join-card input[type=radio]{accent-color:var(--blue-400);}
+    .join-name{font-size:.9rem;font-weight:600;color:var(--blue-200);margin-left:.5rem;}
+    .join-desc{font-size:.78rem;color:var(--muted);margin-top:.25rem;margin-left:1.3rem;}
+    .tag{display:inline-block;padding:.18rem .6rem;border-radius:6px;font-size:.72rem;font-family:"JetBrains Mono",monospace;background:rgba(59,130,246,.1);border:1px solid var(--border);color:var(--blue-200);margin:.12rem;}
+    .sm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;}
+    .sm-card{background:rgba(30,58,95,.3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center;}
+    .sm-val{font-size:1.6rem;font-weight:700;color:var(--blue-300);line-height:1;}
+    .sm-lbl{font-size:.72rem;color:var(--muted);margin-top:.3rem;}
+    .btn-green{display:inline-flex;align-items:center;gap:.55rem;padding:.82rem 1.8rem;border-radius:var(--radius);background:linear-gradient(135deg,#059669,#10b981);border:none;color:#fff;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(5,150,105,.3);transition:all .2s;}
+    .btn-green:hover{opacity:.9;transform:translateY(-1px);}
+    .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    @media(max-width:640px){.cmp-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-glow"></div>
+<nav class="navbar"><div class="nav-inner">
+  <div class="nav-brand"><span class="brand-icon">⬡</span><span class="brand-text">SmartData<span class="brand-accent">OS</span></span></div>
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}"          class="nav-link">Process</a>
+    <a href="{{ url_for('preprocess') }}"     class="nav-link">Preprocess</a>
+    <a href="{{ url_for('profile') }}"        class="nav-link">Profile</a>
+    <a href="{{ url_for('filter_data') }}"    class="nav-link">Filter</a>
+    <a href="{{ url_for('heatmap') }}"        class="nav-link">Heatmap</a>
+    <a href="{{ url_for('merge_datasets') }}" class="nav-link active">Merge</a>
+    <a href="{{ url_for('compare') }}"        class="nav-link">Compare</a>
+    <a href="{{ url_for('history') }}"        class="nav-link">History</a>
+    <a href="{{ url_for('api_stats') }}"      class="nav-link" target="_blank">API</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-badge">Dataset Merger</div>
+  <h1 class="hero-title">Merge Two Datasets <span class="gradient-text">on a Key Column</span></h1>
+  <p class="hero-sub">Inner · Left · Right · Outer joins · Auto-detect common columns · Download merged CSV instantly.</p>
+  <div class="tech-pills"><span class="pill">pd.merge()</span><span class="pill">Inner Join</span><span class="pill">Left / Right Join</span><span class="pill">Outer Join</span><span class="pill">Key Detection</span></div>
+</section>
+
+<main class="main-wrap">
+  {% if error %}<div class="alert alert-error"><span class="alert-icon">⚠</span><div><strong>Error</strong><p style="margin-top:.2rem;font-size:.85rem;color:var(--muted)">{{ error }}</p></div></div>{% endif %}
+
+  {% if not scanned and not merged %}
+  <!-- Step 1: Upload -->
+  <div class="card form-card">
+    <div class="card-header"><h2>📂 Step 1 — Upload Two Datasets</h2><p>Upload Dataset A and Dataset B · SmartDataOS will find common columns you can join on</p></div>
+    <form action="{{ url_for('merge_datasets') }}" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="scan_only" value="1"/>
+      <div class="cmp-grid" style="margin-bottom:1.2rem">
+        <div class="form-group">
+          <label>Dataset A</label>
+          <div class="dropzone" id="dzA"><input type="file" name="dataset_a" accept=".csv,.json" onchange="lbl(this,'dA')" required/>
+            <div class="drop-content" id="dA"><div class="drop-icon">📄</div><div class="drop-text"><strong>Dataset A</strong><span class="drop-sub">CSV or JSON</span></div></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Dataset B</label>
+          <div class="dropzone" id="dzB"><input type="file" name="dataset_b" accept=".csv,.json" onchange="lbl(this,'dB')" required/>
+            <div class="drop-content" id="dB"><div class="drop-icon">📄</div><div class="drop-text"><strong>Dataset B</strong><span class="drop-sub">CSV or JSON</span></div></div>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">🔍 Scan Common Columns →</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if scanned and not merged %}
+  <!-- Step 2: Configure join -->
+  <div class="stats-overview">
+    <div class="stat-card"><div class="stat-value">{{ rows_a }}</div><div class="stat-label">{{ name_a }} rows</div></div>
+    <div class="stat-card"><div class="stat-value">{{ rows_b }}</div><div class="stat-label">{{ name_b }} rows</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:{% if common %}#4ade80{% else %}#f87171{% endif %}">{{ common|length }}</div><div class="stat-label">Common Cols</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h2>🔗 Step 2 — Configure Join</h2><p>Choose the key column and join type · then run merge</p></div>
+    {% if common %}
+    <div style="margin-bottom:1rem"><div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">Common columns (potential join keys):</div>
+      {% for col in common %}<span class="tag">{{ col }}</span>{% endfor %}
+    </div>
+    <form action="{{ url_for('merge_datasets') }}" method="POST" enctype="multipart/form-data">
+      <div class="cmp-grid" style="margin-bottom:1rem">
+        <div class="form-group"><label>Re-upload Dataset A</label>
+          <div class="dropzone"><input type="file" name="dataset_a" accept=".csv,.json" onchange="lbl(this,'dA2')" required/>
+            <div class="drop-content" id="dA2"><div class="drop-icon">📄</div><div class="drop-text"><strong>{{ name_a }}.csv</strong><span class="drop-sub">re-upload same file</span></div></div>
+          </div></div>
+        <div class="form-group"><label>Re-upload Dataset B</label>
+          <div class="dropzone"><input type="file" name="dataset_b" accept=".csv,.json" onchange="lbl(this,'dB2')" required/>
+            <div class="drop-content" id="dB2"><div class="drop-icon">📄</div><div class="drop-text"><strong>{{ name_b }}.csv</strong><span class="drop-sub">re-upload same file</span></div></div>
+          </div></div>
+      </div>
+      <div class="form-row" style="margin-bottom:1.2rem">
+        <div class="form-group"><label>Join Key Column</label>
+          <select name="join_key" class="sel">{% for col in common %}<option value="{{ col }}">{{ col }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label>Join Type</label>
+          <select name="join_type" class="sel">
+            <option value="inner">Inner Join — matching rows only</option>
+            <option value="left">Left Join — all of A + matching B</option>
+            <option value="right">Right Join — all of B + matching A</option>
+            <option value="outer">Outer Join — all rows from both</option>
+          </select></div>
+      </div>
+      <button type="submit" class="btn-primary">🔗 Merge Datasets →</button>
+    </form>
+    {% else %}
+    <div class="alert alert-error"><span class="alert-icon">⚠</span><div><strong>No common columns found</strong><p style="font-size:.85rem;color:var(--muted)">The two datasets share no column names. Rename a column in one file and try again.</p></div></div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if merged %}
+  <!-- Results -->
+  <div class="sm-grid">
+    <div class="sm-card"><div class="sm-val">{{ summary.rows_a }}</div><div class="sm-lbl">{{ name_a }} rows</div></div>
+    <div class="sm-card"><div class="sm-val">{{ summary.rows_b }}</div><div class="sm-lbl">{{ name_b }} rows</div></div>
+    <div class="sm-card"><div class="sm-val" style="color:#4ade80">{{ summary.rows_merged }}</div><div class="sm-lbl">Merged rows</div></div>
+    <div class="sm-card"><div class="sm-val">{{ summary.cols_merged }}</div><div class="sm-lbl">Merged cols</div></div>
+    <div class="sm-card"><div class="sm-val">{{ summary.rows_matched }}</div><div class="sm-lbl">Key matches</div></div>
+    <div class="sm-card"><div class="sm-val" style="color:{% if summary.missing_after %}#fbbf24{% else %}#4ade80{% endif %}">{{ summary.missing_after }}</div><div class="sm-lbl">Missing after</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h2>✅ Merge Complete — <span style="color:var(--blue-300)">{{ summary.join_type | upper }} JOIN</span> on <code>{{ summary.key_col }}</code></h2>
+      <p>{{ summary.join_desc }}</p>
+    </div>
+    {% if summary.cols_overlap %}<p style="margin-bottom:.8rem;font-size:.85rem;color:var(--muted)">Overlapping columns renamed with <code>_A</code> / <code>_B</code> suffixes: {% for c in summary.cols_overlap %}<span class="tag">{{ c }}</span>{% endfor %}</p>{% endif %}
+    <div class="ptbl-wrap" style="margin-bottom:1.4rem">
+      <table class="ptbl">
+        <thead><tr>{% for col in merged_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for row in preview %}<tr>{% for col in merged_cols %}<td>{{ row[col] if row[col] is not none else '—' }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap">
+      <a href="{{ url_for('download_merged', filename=merged_name) }}" class="btn-green">⬇ Download {{ merged_name }}</a>
+      <a href="{{ url_for('merge_datasets') }}" class="btn-secondary">🔄 New Merge</a>
+    </div>
+  </div>
+  {% endif %}
+</main>
+<footer class="footer">SmartData<span class="brand-accent">OS</span> · Dataset Merger · pd.merge() · Inner/Left/Right/Outer Joins · Key Detection</footer>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+function lbl(input, id) {
+  const f = input.files[0]; if(!f) return;
+  const el = document.getElementById(id); if(!el) return;
+  el.innerHTML = `<div class="drop-icon">✅</div><div class="drop-text"><strong>${f.name}</strong><span class="drop-sub">${(f.size/1024).toFixed(1)} KB · ready</span></div>`;
+}
+</script>
+</body></html>

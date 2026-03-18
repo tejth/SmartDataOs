@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SmartDataOS · Heatmap</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .pair-row{display:flex;align-items:center;gap:.9rem;padding:.7rem 1rem;border-radius:10px;background:rgba(30,58,95,.22);border:1px solid var(--border);transition:border-color .2s;}
+    .pair-row:hover{border-color:var(--border-hover);}
+    .pair-cols{font-size:.88rem;font-weight:600;color:var(--blue-200);}
+    .pair-r{font-family:"JetBrains Mono",monospace;font-size:1rem;font-weight:700;min-width:52px;}
+    .pair-label{font-size:.75rem;padding:.2rem .6rem;border-radius:6px;}
+    .lbl-strong-pos{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2);}
+    .lbl-strong-neg{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+    .lbl-moderate{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2);}
+    .lbl-weak{background:rgba(148,163,184,.08);color:var(--muted);border:1px solid var(--border);}
+    .heatmap-img{width:100%;max-width:680px;display:block;margin:0 auto;border-radius:var(--radius);border:1px solid var(--border);}
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-glow"></div>
+<nav class="navbar"><div class="nav-inner">
+  <div class="nav-brand"><span class="brand-icon">⬡</span><span class="brand-text">SmartData<span class="brand-accent">OS</span></span></div>
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}"          class="nav-link">Process</a>
+    <a href="{{ url_for('preprocess') }}"     class="nav-link">Preprocess</a>
+    <a href="{{ url_for('profile') }}"        class="nav-link">Profile</a>
+    <a href="{{ url_for('filter_data') }}"    class="nav-link">Filter</a>
+    <a href="{{ url_for('heatmap') }}"        class="nav-link active">Heatmap</a>
+    <a href="{{ url_for('merge_datasets') }}" class="nav-link">Merge</a>
+    <a href="{{ url_for('compare') }}"        class="nav-link">Compare</a>
+    <a href="{{ url_for('history') }}"        class="nav-link">History</a>
+    <a href="{{ url_for('api_stats') }}"      class="nav-link" target="_blank">API</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-badge">Correlation Heatmap</div>
+  <h1 class="hero-title">Pearson <span class="gradient-text">Correlation Matrix</span></h1>
+  <p class="hero-sub">Visualise relationships between all numeric columns · Identify multicollinearity · Spot strong positive and negative correlations instantly.</p>
+  <div class="tech-pills"><span class="pill">Pearson r</span><span class="pill">Matplotlib Heatmap</span><span class="pill">Custom Colormap</span><span class="pill">Annotated Matrix</span></div>
+</section>
+
+<main class="main-wrap">
+  {% if error %}<div class="alert alert-error"><span class="alert-icon">⚠</span><div><strong>Error</strong><p style="margin-top:.2rem;font-size:.85rem;color:var(--muted)">{{ error }}</p></div></div>{% endif %}
+
+  {% if not result %}
+  <div class="card form-card">
+    <div class="card-header"><h2>🌡 Upload Dataset for Correlation Heatmap</h2><p>Needs at least 2 numeric columns · Pearson correlation matrix generated with NumPy + Matplotlib</p></div>
+    <form action="{{ url_for('heatmap') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-group full-width">
+        <div class="dropzone" id="dropzone">
+          <input type="file" name="dataset" accept=".csv,.json" onchange="handleFileSelect(this)" required/>
+          <div class="drop-content" id="drop-content"><div class="drop-icon">🌡</div>
+            <div class="drop-text"><strong>Drag &amp; drop</strong> your CSV or JSON file<br/><span class="drop-sub">or click to browse · employee_dataset.csv has 12 numeric columns</span></div>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">🌡 Generate Heatmap →</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if result %}
+  <!-- Stats -->
+  <div class="stats-overview">
+    <div class="stat-card"><div class="stat-value">{{ result.n_cols }}</div><div class="stat-label">Numeric Cols</div></div>
+    <div class="stat-card"><div class="stat-value">{{ result.pairs|length }}</div><div class="stat-label">Total Pairs</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:#4ade80">{{ result.strong|length }}</div><div class="stat-label">Strong (|r|≥0.7)</div></div>
+    <div class="stat-card"><div class="stat-value">{{ rows }}</div><div class="stat-label">Rows</div></div>
+  </div>
+
+  <!-- Heatmap image -->
+  <div class="card" style="text-align:center">
+    <div class="card-header"><h2>🌡 Correlation Heatmap — <span style="color:var(--blue-300)">{{ dataset_name }}</span></h2>
+      <p>Blue = positive correlation · Red = negative · Dashed values are annotated · Generated with Matplotlib custom colormap</p></div>
+    <img class="heatmap-img" src="{{ url_for('static', filename=result.chart_path) }}" alt="Correlation Heatmap"/>
+  </div>
+
+  <!-- Strong correlations -->
+  {% if result.strong %}
+  <div class="card">
+    <div class="card-header"><h2>⚡ Strong Correlations (|r| ≥ 0.7)</h2><p>{{ result.strong|length }} strong relationship(s) detected · These may indicate multicollinearity</p></div>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      {% for p in result.strong %}
+      <div class="pair-row">
+        <span class="pair-cols"><code>{{ p.col_a }}</code> ↔ <code>{{ p.col_b }}</code></span>
+        <span class="pair-r" style="color:{{ p.color }}">{{ p.r }}</span>
+        <span class="pair-label {% if p.r >= 0.7 %}lbl-strong-pos{% else %}lbl-strong-neg{% endif %}">{{ p.label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- All pairs -->
+  <div class="card">
+    <div class="card-header"><h2>📋 All Correlation Pairs (sorted by strength)</h2><p>Every pairwise Pearson correlation coefficient</p></div>
+    <div style="display:flex;flex-direction:column;gap:.4rem">
+      {% for p in result.pairs %}
+      <div class="pair-row" style="padding:.5rem .85rem">
+        <span class="pair-cols" style="font-size:.82rem"><code>{{ p.col_a }}</code> ↔ <code>{{ p.col_b }}</code></span>
+        <span class="pair-r" style="color:{{ p.color }};font-size:.9rem">{{ p.r }}</span>
+        <span class="pair-label {% if p.abs_r >= 0.7 and p.r > 0 %}lbl-strong-pos{% elif p.abs_r >= 0.7 %}lbl-strong-neg{% elif p.abs_r >= 0.4 %}lbl-moderate{% else %}lbl-weak{% endif %}" style="font-size:.7rem">{{ p.label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1rem;flex-wrap:wrap">
+    <a href="{{ url_for('heatmap') }}" class="btn-secondary">🌡 New Heatmap</a>
+    <a href="{{ url_for('profile') }}" class="btn-secondary">📊 Full Profile →</a>
+  </div>
+  {% endif %}
+</main>
+<footer class="footer">SmartData<span class="brand-accent">OS</span> · Correlation Heatmap · Pearson r · Matplotlib Custom Colormap · Multicollinearity Detection</footer>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body></html>

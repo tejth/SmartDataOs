@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SmartDataOS · Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    select.sel{width:100%;padding:.75rem 1rem;background:rgba(10,22,40,.6);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:inherit;font-size:.9rem;outline:none;cursor:pointer;}
+    select.sel:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px var(--accent-glow);}
+    select.sel option{background:#1E293B;}
+    .sec-lbl{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem;}
+    .sec-lbl::after{content:"";flex:1;height:1px;background:var(--border);}
+    .ptbl{width:100%;border-collapse:collapse;font-size:.8rem;}
+    .ptbl th{background:rgba(30,58,95,.55);color:var(--blue-200);padding:.55rem .8rem;text-align:left;white-space:nowrap;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+    .ptbl td{padding:.45rem .8rem;border-bottom:1px solid rgba(59,130,246,.06);color:var(--text);white-space:nowrap;font-family:"JetBrains Mono",monospace;font-size:.76rem;}
+    .ptbl tr:hover td{background:rgba(59,130,246,.04);}
+    .ptbl tr:last-child td{border-bottom:none;}
+    .ptbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+    .rp-blue{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .65rem;border-radius:999px;font-size:.72rem;font-family:"JetBrains Mono",monospace;background:rgba(59,130,246,.12);border:1px solid var(--border);color:var(--blue-200);}
+    .rp-green{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .65rem;border-radius:999px;font-size:.72rem;font-family:"JetBrains Mono",monospace;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#4ade80;}
+    .rp-amber{display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .65rem;border-radius:999px;font-size:.72rem;font-family:"JetBrains Mono",monospace;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#fbbf24;}
+    .rp-red  {display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .65rem;border-radius:999px;font-size:.72rem;font-family:"JetBrains Mono",monospace;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;}
+    .col-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;transition:border-color .2s;}
+    .col-block:hover{border-color:var(--border-hover);}
+    .cb-name{font-size:.95rem;font-weight:700;color:var(--blue-200);margin-bottom:.4rem;}
+    .cb-dtype{font-size:.72rem;font-family:"JetBrains Mono",monospace;color:var(--muted);}
+    .cb-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .8rem;margin:.7rem 0;}
+    .cb-item label{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+    .cb-item span{font-size:.85rem;font-weight:600;color:var(--blue-100);font-family:"JetBrains Mono",monospace;}
+    .vc-bar-wrap{display:flex;flex-direction:column;gap:.3rem;}
+    .vc-row{display:flex;align-items:center;gap:.6rem;font-size:.76rem;}
+    .vc-label{width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);}
+    .vc-track{flex:1;height:8px;background:rgba(59,130,246,.08);border-radius:999px;overflow:hidden;}
+    .vc-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue-500),var(--blue-300));}
+    .vc-pct{width:32px;text-align:right;color:var(--muted);}
+    .charts-mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;}
+    .mini-wrap{background:#0F172A;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+    .mini-wrap img{width:100%;display:block;}
+    .mini-cap{padding:.4rem .7rem;font-size:.7rem;color:var(--muted);border-top:1px solid var(--border);}
+    .skew-badge{display:inline-block;padding:.15rem .55rem;border-radius:6px;font-size:.7rem;font-family:"JetBrains Mono",monospace;}
+    .sk-norm{background:rgba(34,197,94,.1);color:#4ade80;}
+    .sk-right{background:rgba(245,158,11,.1);color:#fbbf24;}
+    .sk-left{background:rgba(139,92,246,.1);color:#a78bfa;}
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-glow"></div>
+<nav class="navbar"><div class="nav-inner">
+  <div class="nav-brand"><span class="brand-icon">⬡</span><span class="brand-text">SmartData<span class="brand-accent">OS</span></span></div>
+  <div class="nav-links">
+    <a href="{{ url_for('index') }}"          class="nav-link">Process</a>
+    <a href="{{ url_for('preprocess') }}"     class="nav-link">Preprocess</a>
+    <a href="{{ url_for('profile') }}"        class="nav-link active">Profile</a>
+    <a href="{{ url_for('filter_data') }}"    class="nav-link">Filter</a>
+    <a href="{{ url_for('heatmap') }}"        class="nav-link">Heatmap</a>
+    <a href="{{ url_for('merge_datasets') }}" class="nav-link">Merge</a>
+    <a href="{{ url_for('compare') }}"        class="nav-link">Compare</a>
+    <a href="{{ url_for('history') }}"        class="nav-link">History</a>
+    <a href="{{ url_for('api_stats') }}"      class="nav-link" target="_blank">API</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <div class="hero-badge">Deep Data Profiler</div>
+  <h1 class="hero-title">Column-by-Column <span class="gradient-text">Profile Report</span></h1>
+  <p class="hero-sub">Mean · Median · Std · Skewness · Kurtosis · Top values · Histograms — for every column in seconds.</p>
+  <div class="tech-pills"><span class="pill">NumPy Skewness</span><span class="pill">Kurtosis</span><span class="pill">Value Counts</span><span class="pill">Per-Column Charts</span><span class="pill">Generator Streaming</span></div>
+</section>
+
+<main class="main-wrap">
+  {% if error %}<div class="alert alert-error"><span class="alert-icon">⚠</span><div><strong>Error</strong><p style="margin-top:.2rem;font-size:.85rem;color:var(--muted)">{{ error }}</p></div></div>{% endif %}
+
+  {% if not result %}
+  <div class="card form-card">
+    <div class="card-header"><h2>📊 Upload Dataset to Profile</h2><p>Upload a CSV or JSON file to generate a complete per-column statistical profile</p></div>
+    <form action="{{ url_for('profile') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-group full-width">
+        <div class="dropzone" id="dropzone">
+          <input type="file" name="dataset" accept=".csv,.json" onchange="handleFileSelect(this)" required/>
+          <div class="drop-content" id="drop-content"><div class="drop-icon">📊</div>
+            <div class="drop-text"><strong>Drag &amp; drop</strong> your CSV or JSON file<br/><span class="drop-sub">or click to browse · try employee_dataset.csv</span></div>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">📊 Generate Profile Report →</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if result %}
+  <!-- Overview -->
+  <div class="stats-overview">
+    <div class="stat-card"><div class="stat-value">{{ result.overview.rows }}</div><div class="stat-label">Rows</div></div>
+    <div class="stat-card"><div class="stat-value">{{ result.overview.cols }}</div><div class="stat-label">Columns</div></div>
+    <div class="stat-card"><div class="stat-value">{{ result.overview.numeric_cols }}</div><div class="stat-label">Numeric</div></div>
+    <div class="stat-card"><div class="stat-value">{{ result.overview.text_cols }}</div><div class="stat-label">Text</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:{% if result.overview.total_missing %}#fbbf24{% else %}#4ade80{% endif %}">{{ result.overview.total_missing }}</div><div class="stat-label">Missing</div></div>
+    <div class="stat-card"><div class="stat-value">{{ result.overview.memory_kb }}</div><div class="stat-label">KB Memory</div></div>
+  </div>
+
+  <!-- Mini charts -->
+  {% if result.charts %}
+  <div class="card">
+    <div class="card-header"><h2>📈 Column Distributions</h2><p>Auto-generated histogram / bar chart for each column · Matplotlib Agg backend</p></div>
+    <div class="charts-mini">
+      {% for ch in result.charts %}
+      <div class="mini-wrap">
+        <img src="{{ url_for('static', filename=ch.path) }}" alt="{{ ch.col }}"/>
+        <div class="mini-cap">{{ ch.col }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Per-column detail -->
+  <div class="card">
+    <div class="card-header"><h2>🔬 Per-Column Profile — <span style="color:var(--blue-300)">{{ dataset_name }}</span></h2>
+      <p>Full statistics for all {{ result.columns|length }} columns · yielded lazily via profile_stream() generator</p></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+      {% for col in result.columns %}
+      <div class="col-block">
+        <div class="cb-name">{{ col.col }}</div>
+        <div class="cb-dtype">{{ col.dtype }} &nbsp;·&nbsp;
+          {% if col.missing > 0 %}<span style="color:#fbbf24">{{ col.missing }} missing ({{ col.missing_p }}%)</span>
+          {% else %}<span style="color:#4ade80">no missing</span>{% endif %}
+          &nbsp;·&nbsp; {{ col.unique }} unique
+        </div>
+        {% if col.is_num %}
+        <div class="cb-grid">
+          <div class="cb-item"><label>Mean</label><br/><span>{{ col.mean }}</span></div>
+          <div class="cb-item"><label>Median</label><br/><span>{{ col.median }}</span></div>
+          <div class="cb-item"><label>Std Dev</label><br/><span>{{ col.std }}</span></div>
+          <div class="cb-item"><label>Min / Max</label><br/><span>{{ col.min }} / {{ col.max }}</span></div>
+          <div class="cb-item"><label>Q25 / Q75</label><br/><span>{{ col.q25 }} / {{ col.q75 }}</span></div>
+          <div class="cb-item"><label>Skewness</label><br/>
+            <span class="skew-badge {% if col.skew_label == 'Normal' %}sk-norm{% elif col.skew_label == 'Right-skewed' %}sk-right{% else %}sk-left{% endif %}">
+              {{ col.skew }} ({{ col.skew_label }})
+            </span>
+          </div>
+          <div class="cb-item"><label>Kurtosis</label><br/><span>{{ col.kurt }}</span></div>
+        </div>
+        {% else %}
+        <div style="margin-top:.7rem" class="vc-bar-wrap">
+          {% for v in col.top_values[:6] %}
+          <div class="vc-row">
+            <span class="vc-label">{{ v.val }}</span>
+            <div class="vc-track"><div class="vc-fill" style="width:{{ v.pct }}%"></div></div>
+            <span class="vc-pct">{{ v.pct }}%</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1rem;flex-wrap:wrap">
+    <a href="{{ url_for('profile') }}" class="btn-secondary">📊 Profile Another Dataset</a>
+    <a href="{{ url_for('heatmap') }}" class="btn-secondary">🌡 View Correlations →</a>
+  </div>
+  {% endif %}
+</main>
+<footer class="footer">SmartData<span class="brand-accent">OS</span> · Data Profiler · NumPy Skewness &amp; Kurtosis · Value Counts · Generator Streaming</footer>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body></html>
