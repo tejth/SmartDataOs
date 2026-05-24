@@ -49,7 +49,7 @@ class ComparisonEngine(BaseComparator, SerializableMixin, ReprMixin):
     """
 
     BLUE_A = "#3B82F6"    # Dataset A colour
-    BLUE_B = "#60A5FA"    # Dataset B colour
+    BLUE_B = "#60A5FA"    # Dataset B colourr
 
     @log_call
     @timer
